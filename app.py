@@ -34,7 +34,6 @@ if 'blog.naver.com' in user_input:
     title = soup.select_one('#SE-b28e8031-860b-4891-9f6b-228ccf1c844f')
     str = soup.select_one('div.se-main-container')
     str = str.text
-    st.info(str)
     # str = str.text.replace('\n', '').strip()
     with st.spinner('Wait for it...'):
         time.sleep(2)

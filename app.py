@@ -7,7 +7,7 @@ okt = Okt()
 kom = Komoran()
 # kkma = Kkma()
 
-st.title('BREAKOUT SON')
+st.title('BREAKOUT SON 형태소분석')
 
 
 # 블로그 에디터 창에서 안보이지만 따라오는 단어들
@@ -68,6 +68,7 @@ import time
 with st.spinner('Wait for it...'):
     time.sleep(1)
 st.write('#### 조사 사용빈도')
+st.write('조사를 줄이면 메인키워드 집중도가 올라갑니다')
 st.info(postpositon_cnt)
 st.success('Done!')
 
@@ -97,5 +98,6 @@ word_kom_space_cnt = dict(Counter(word_kom_space).most_common(30))
 with st.spinner('Wait for it...'):
     time.sleep(2)
 st.write('#### 키워드 사용 빈도')
+st.write('메인키워드를 가장 많이 쓰되 과다반복을 줄이세요')
 st.info(word_kom_space_cnt)
 st.success('Done!')

@@ -46,7 +46,7 @@ if str != '':
     # 따라온 단어들 삭제
     for i in remove_list:
         str = str.replace(i, '')
-
+    st.info(str)
     # 공백과 줄바꿈 삭제
     str_re = re.sub('\n| ', '', str)
     str_without_line = str.replace('\n','').strip() #줄바꿈만 정리한 것

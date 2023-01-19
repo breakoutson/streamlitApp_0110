@@ -2,4 +2,4 @@ streamlit
 konlpy
 jpype1==1.2.0
 tweepy==3.7.0
-BeautifulSoup
+bs4

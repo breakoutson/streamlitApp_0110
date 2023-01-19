@@ -4,7 +4,7 @@ from konlpy.tag import Okt, Komoran #Kkma
 import streamlit as st
 import urllib.request as req
 import urllib.parse as par
-
+import time
 from bs4 import BeautifulSoup
 
 okt = Okt()
@@ -36,11 +36,13 @@ if 'blog.naver.com' in user_input:
     str = str.text
     st.info(str)
     # str = str.text.replace('\n', '').strip()
+    with st.spinner('Wait for it...'):
+        time.sleep(2)
 else:
     str = user_input
 
 if str != '':
-
+    
     # 따라온 단어들 삭제
     for i in remove_list:
         str = str.replace(i, '')
@@ -62,9 +64,8 @@ if str != '':
     emoji_pattern.sub(r'', str_without_line)
 
     # 형태소 분석
-    import time
     with st.spinner('Wait for it...'):
-        time.sleep(3)
+        time.sleep(2)
     word = okt.morphs(str_without_line) # Komoran 으로 공백있는 본문에서 morphs 추출 (조사)
     # word_re = okt.nouns(str_re) # Okt로 공백없는 본문에서 명사추출 (금칙어 조사시)
     word_okt_space = okt.nouns(str_without_line) # Okt로 공백있는 본문에서 명사추출 (형태소추출)

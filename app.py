@@ -2,12 +2,15 @@ import re
 from collections import Counter
 from konlpy.tag import Okt, Komoran #Kkma
 import streamlit as st
+import urllib.request as req
+import urllib.parse as par
+
+from bs4 import BeautifulSoup
 
 okt = Okt()
 kom = Komoran()
-# kkma = Kkma()
 
-st.title('BREAKOUT SON 형태소분석')
+st.title('BREAKOUT SON 형태소 분석')
 
 
 # 블로그 에디터 창에서 안보이지만 따라오는 단어들
@@ -15,8 +18,28 @@ remove_list = ['대표사진 삭제', '사진 설명을 입력하세요.', '출�
 
 # 줄바꿈 있는 본문을 한번에 입력하기 위해 pyautogui
 # str = pyautogui.prompt()
-str = st.text_input('본문 입력')
-if not '' in str:
+
+user_input = st.text_input('본문 또는 URL 입력')
+
+
+if 'blog.naver.com' in user_input:
+    url = user_input
+
+    if not 'm.blog.naver.com' in url:
+        url = url.replace('blog.naver.com', 'm.blog.naver.com')
+
+    code = req.urlopen(url)
+    soup = BeautifulSoup(code, 'html.parser')
+
+    title = soup.select_one('#SE-b28e8031-860b-4891-9f6b-228ccf1c844f')
+    str = soup.select_one('div.se-main-container')
+    str = str.text
+    st.info(str)
+    # str = str.text.replace('\n', '').strip()
+else:
+    str = user_input
+
+if str != '':
 
     # 따라온 단어들 삭제
     for i in remove_list:
@@ -25,18 +48,29 @@ if not '' in str:
     # 공백과 줄바꿈 삭제
     str_re = re.sub('\n| ', '', str)
     str_without_line = str.replace('\n','').strip() #줄바꿈만 정리한 것
-
     # print (str_re)
     # print ('=======================================')
     # print ('공백제외:', len(str_re), '|', '공백포함:', len(str),'자 입니다')
 
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
+
+    emoji_pattern.sub(r'', str_without_line)
+
     # 형태소 분석
-    print ('형태소를 분석하고 있습니다..')
-    word = kom.morphs(str_without_line) # Komoran 으로 공백있는 본문에서 morphs 추출 (조사)
+    import time
+    with st.spinner('Wait for it...'):
+        time.sleep(3)
+    word = okt.morphs(str_without_line) # Komoran 으로 공백있는 본문에서 morphs 추출 (조사)
     # word_re = okt.nouns(str_re) # Okt로 공백없는 본문에서 명사추출 (금칙어 조사시)
     word_okt_space = okt.nouns(str_without_line) # Okt로 공백있는 본문에서 명사추출 (형태소추출)
     # word_kkma_space = kkma.nouns(str_without_line) # KKma로 공백있는 본문에서 명사추출 (형태소추출)
-    word_kom_space = kom.nouns(str_without_line) # KKma로 공백있는 본문에서 명사추출 (형태소추출)
+    word_kom_space = okt.nouns(str_without_line) # KKma로 공백있는 본문에서 명사추출 (형태소추출)
+
 
     # word_cnt = Counter(word)
     # print (word_cnt)
@@ -65,13 +99,10 @@ if not '' in str:
             print ('')
     print ('\n'*1)
 
-    import time
-    with st.spinner('Wait for it...'):
-        time.sleep(1)
+
     st.write('### 조사 사용빈도')
-    st.write('Tip.조사를 줄이면 메인키워드 집중도가 올라갑니다')
+    st.write('(Tip.조사를 줄이면 메인키워드 집중도가 올라갑니다)')
     st.info(postpositon_cnt)
-    st.success('Done!')
 
 
     # 형태소 추출
@@ -99,6 +130,7 @@ if not '' in str:
     with st.spinner('Wait for it...'):
         time.sleep(2)
     st.write('### 키워드 사용 빈도')
-    st.write('Tip.메인키워드를 가장 많이 쓰되 과다반복을 줄이세요')
+    st.write('(Tip.메인키워드를 가장 많이 쓰되 과다반복을 줄이세요)')
     st.info(word_kom_space_cnt)
-    st.success('Done!')
+else:
+    pass
